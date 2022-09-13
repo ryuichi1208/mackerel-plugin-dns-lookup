@@ -75,7 +75,9 @@ func (dr DNSResult) FetchMetrics() (map[string]float64, error) {
 func (d *DNS) newDNS(o options) {
 	d.o = o
 	d.r = &net.Resolver{
-		PreferGo: true,
+		// PreferGo controls whether Go's built-in DNS resolver is preferred
+		PreferGo:     true,
+		StrictErrors: false,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
 			d := net.Dialer{
 				Timeout: time.Millisecond * time.Duration(o.Timeout),
@@ -87,12 +89,27 @@ func (d *DNS) newDNS(o options) {
 }
 
 func (d *DNS) lookup() error {
-	ip, err := d.r.LookupHost(context.Background(), d.o.Domain)
+	var ip []string
+	var err error
+	switch d.o.Type {
+	case "a", "A":
+		ip, err = d.r.LookupHost(context.Background(), d.o.Domain)
+	case "ptr", "PTR":
+		ip, err = d.r.LookupAddr(context.Background(), d.o.Domain)
+	case "txt", "TXT":
+		ip, err = d.r.LookupTXT(context.Background(), d.o.Domain)
+	case "cname", "CNAME":
+		_, err = d.r.LookupCNAME(context.Background(), d.o.Domain)
+	default:
+		ip, err = d.r.LookupHost(context.Background(), d.o.Domain)
+	}
 	if err != nil {
 		return err
 	}
 	if d.o.Debug {
-		fmt.Println(ip[0])
+		for _, t := range ip {
+			fmt.Println(t)
+		}
 	}
 
 	return nil
@@ -121,9 +138,11 @@ func (dr *DNSResult) showResult(res []int64) {
 		sum += x
 	}
 
-	dr.min = float64(res[0])
-	dr.max = float64(res[len(res)-1])
-	dr.avg = float64(sum / int64(len(res)))
+	if len(res) > 0 {
+		dr.min = float64(res[0])
+		dr.max = float64(res[len(res)-1])
+		dr.avg = float64(sum / int64(len(res)))
+	}
 
 }
 
