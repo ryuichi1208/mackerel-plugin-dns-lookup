@@ -3,6 +3,7 @@ package dns
 import (
 	"net"
 	"reflect"
+	"sort"
 	"sync"
 	"testing"
 
@@ -37,6 +38,8 @@ func TestDNSResult_GraphDefinition(t *testing.T) {
 		min    float64
 		max    float64
 		avg    float64
+		p95    float64
+		p99    float64
 	}
 	tests := []struct {
 		name   string
@@ -53,6 +56,8 @@ func TestDNSResult_GraphDefinition(t *testing.T) {
 				min:    tt.fields.min,
 				max:    tt.fields.max,
 				avg:    tt.fields.avg,
+				p95:    tt.fields.p95,
+				p99:    tt.fields.p99,
 			}
 			if got := dr.GraphDefinition(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("DNSResult.GraphDefinition() = %v, want %v", got, tt.want)
@@ -68,6 +73,8 @@ func TestDNSResult_FetchMetrics(t *testing.T) {
 		min    float64
 		max    float64
 		avg    float64
+		p95    float64
+		p99    float64
 	}
 	tests := []struct {
 		name    string
@@ -85,6 +92,8 @@ func TestDNSResult_FetchMetrics(t *testing.T) {
 				min:    tt.fields.min,
 				max:    tt.fields.max,
 				avg:    tt.fields.avg,
+				p95:    tt.fields.p95,
+				p99:    tt.fields.p99,
 			}
 			got, err := dr.FetchMetrics()
 			if (err != nil) != tt.wantErr {
@@ -182,6 +191,8 @@ func TestDNSResult_showResult(t *testing.T) {
 		min    float64
 		max    float64
 		avg    float64
+		p95    float64
+		p99    float64
 	}
 	type args struct {
 		res []int64
@@ -201,8 +212,31 @@ func TestDNSResult_showResult(t *testing.T) {
 				min:    tt.fields.min,
 				max:    tt.fields.max,
 				avg:    tt.fields.avg,
+				p95:    tt.fields.p95,
+				p99:    tt.fields.p99,
 			}
 			dr.showResult(tt.args.res)
+		})
+	}
+}
+
+func Test_percentileN(t *testing.T) {
+	type args struct {
+		res []int64
+		p   int
+	}
+	tests := []struct {
+		name string
+		args args
+		want float64
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := percentileN(tt.args.res, tt.args.p); got != tt.want {
+				t.Errorf("percentileN() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
@@ -224,6 +258,48 @@ func Test_g(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := g(tt.args.wg, tt.args.d, tt.args.c); (err != nil) != tt.wantErr {
 				t.Errorf("g() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_intToFloat64(t *testing.T) {
+	type args struct {
+		i []int64
+	}
+	tests := []struct {
+		name string
+		args args
+		want sort.Float64Slice
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := intToFloat64(tt.args.i); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("intToFloat64() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_printPercentileN(t *testing.T) {
+	type args struct {
+		numbers *sort.Float64Slice
+		l       int
+		n       int
+	}
+	tests := []struct {
+		name string
+		args args
+		want float64
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := printPercentileN(tt.args.numbers, tt.args.l, tt.args.n); got != tt.want {
+				t.Errorf("printPercentileN() = %v, want %v", got, tt.want)
 			}
 		})
 	}
