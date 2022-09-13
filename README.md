@@ -41,3 +41,18 @@ Application Options:
 Help Options:
   -h, --help      Show this help message
 ```
+
+Run
+
+```
+$ mackerel-plugin-dns-lookup \
+    --server 8.8.8.8 \
+    --port 53 \
+    --domain google.com \
+    --count 10 \
+    --threads 1
+
+min	10	1663065111
+max	23	1663065111
+avg	12	1663065111
+```
