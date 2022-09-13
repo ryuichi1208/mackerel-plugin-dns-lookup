@@ -42,7 +42,7 @@ Help Options:
   -h, --help      Show this help message
 ```
 
-Run
+Run (Unit is ms)
 
 ```
 $ mackerel-plugin-dns-lookup \
