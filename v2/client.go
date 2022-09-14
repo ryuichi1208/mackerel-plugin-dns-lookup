@@ -46,6 +46,27 @@ type DNSQuery struct {
 	Questions    []DNSQuestion
 }
 
+func intToFloat64(i []int64) sort.Float64Slice {
+	f := make([]float64, len(i))
+	for n := range i {
+		f[n] = float64(i[n])
+	}
+	return f
+}
+
+func printPercentileN(numbers *sort.Float64Slice, l, n int) float64 {
+	i := l*n/100 - 1
+	ns := *numbers
+	return ns[i]
+}
+
+func Run(tmp []int64) {
+	dr := &DNSResult{}
+	dr.showResult(tmp)
+
+	plugin := mp.NewMackerelPlugin(dr)
+	plugin.Run()
+
 type DNSQuestion struct {
 	Domain string
 	Type   uint16
