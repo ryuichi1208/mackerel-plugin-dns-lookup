@@ -107,26 +107,6 @@ func (q DNSQuestion) encode() []byte {
 	return buffer.Bytes()
 }
 
-func printResponseCode(responseCode byte) {
-
-	switch responseCode {
-	case 0:
-		fmt.Println("Domain exists!")
-	case 1:
-		fmt.Println("Format error")
-	case 2:
-		fmt.Println("Server failure")
-	case 3:
-		fmt.Println("Non-existent domain")
-	case 9:
-		fmt.Println("Server not authorative for zone")
-	case 10:
-		fmt.Println("Name not in zone")
-	default:
-		fmt.Printf("Unmapped response code for '%d'\n", responseCode)
-	}
-}
-
 func Do(conn net.Conn, encodedQuery []byte, cnt int) (res []int64) {
 
 	for i := 0; i < cnt; i++ {
