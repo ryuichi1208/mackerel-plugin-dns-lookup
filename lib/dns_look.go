@@ -64,7 +64,7 @@ func graphGen(labelPrefix, device string) map[string]mp.Graphs {
 }
 
 func (dr DNSResult) GraphDefinition() map[string]mp.Graphs {
-	return graphGen("dns", dr.Name)
+	return graphGen("dns", "responce")
 }
 
 func (dr DNSResult) FetchMetrics() (map[string]float64, error) {
