@@ -1,5 +1,5 @@
 builds:
-  - binary: goci-sample
+  - binary: mackerel-plugin-dns-lookup
     ldflags:
       - -s -w
     goos:
