@@ -190,8 +190,10 @@ func printPercentileN(numbers *sort.Float64Slice, l, n int) float64 {
 	return ns[i]
 }
 
-func Run(tmp []int64) {
-	dr := &DNSResult{}
+func Run(tmp []int64, opts options) {
+	dr := &DNSResult{
+		Name: opts.Domain,
+	}
 	dr.showResult(tmp)
 
 	plugin := mp.NewMackerelPlugin(dr)
@@ -232,5 +234,5 @@ func Do() {
 		tmp = append(tmp, i...)
 	}
 
-	Run(tmp)
+	Run(tmp, opts)
 }
